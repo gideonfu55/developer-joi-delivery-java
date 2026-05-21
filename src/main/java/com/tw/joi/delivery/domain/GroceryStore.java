@@ -21,4 +21,7 @@ public class GroceryStore extends Outlet {
         this.inventory = new HashSet<>();
     }
 
+    public Set<GroceryProduct> getInventory() {
+        return inventory;
+    }
 }

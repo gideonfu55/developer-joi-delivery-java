@@ -68,7 +68,8 @@ public class SeedData {
             .weight(BigDecimal.valueOf(500.00))
             .store(store)
             .threshold(10)
-            .availableStock(30)
+//            .availableStock(30)
+            .availableStock(5)
             .build();
     }
 

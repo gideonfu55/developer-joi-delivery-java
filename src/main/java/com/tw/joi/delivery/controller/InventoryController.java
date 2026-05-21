@@ -1,5 +1,6 @@
 package com.tw.joi.delivery.controller;
 
+import com.tw.joi.delivery.service.InventoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
@@ -13,9 +14,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class InventoryController {
 
+    private final InventoryService inventoryService;
 
     @GetMapping("/health")
     public ResponseEntity<Object> fetchStoreInventoryHealth(@RequestParam(name = "storeId") String storeId) {
-        return ResponseEntity.ok(HttpEntity.EMPTY);
+        return ResponseEntity.ok(inventoryService.fetchStoreInventoryHealth(storeId));
     }
 }
