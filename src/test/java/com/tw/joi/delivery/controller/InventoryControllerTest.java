@@ -7,6 +7,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.tw.joi.delivery.domain.GroceryStore;
 import com.tw.joi.delivery.dto.response.InventoryHealthResponse;
+import com.tw.joi.delivery.dto.response.InventoryProductHealth;
 import com.tw.joi.delivery.exception.ResourceNotFoundException;
 import com.tw.joi.delivery.service.InventoryService;
 import org.hamcrest.core.Is;
@@ -18,6 +19,8 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+
+import java.util.List;
 
 @WebMvcTest(InventoryController.class)
 class InventoryControllerTest {
@@ -39,12 +42,21 @@ class InventoryControllerTest {
             .outletId("store101")
             .build();
 
+        InventoryProductHealth inventoryProductHealthList = new InventoryProductHealth(
+            "product101",
+            "Wheat Bread",
+            30,
+            10,
+            "HEALTHY"
+        );
+
         InventoryHealthResponse response = new InventoryHealthResponse(
             store,
             "HEALTHY",
             3,
             0,
-            0
+            0,
+            List.of(inventoryProductHealthList)
         );
 
         when(inventoryService.fetchStoreInventoryHealth("store101"))
@@ -54,12 +66,18 @@ class InventoryControllerTest {
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             //put meaningful assertions
+            .andExpect(status().isOk())
             .andExpect(MockMvcResultMatchers.jsonPath("$.store.outletId", Is.is("store101")))
             .andExpect(MockMvcResultMatchers.jsonPath("$.store.name", Is.is("Fresh Picks")))
             .andExpect(MockMvcResultMatchers.jsonPath("$.inventoryStatus", Is.is("HEALTHY")))
             .andExpect(MockMvcResultMatchers.jsonPath("$.totalProducts", Is.is(3)))
             .andExpect(MockMvcResultMatchers.jsonPath("$.lowStockProductCount", Is.is(0)))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.outOfStockProductCount", Is.is(0)));
+            .andExpect(MockMvcResultMatchers.jsonPath("$.outOfStockProductCount", Is.is(0)))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.products[0].productId", Is.is("product101")))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.products[0].productName", Is.is("Wheat Bread")))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.products[0].availableStock", Is.is(30)))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.products[0].threshold", Is.is(10)))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.products[0].inventoryStatus", Is.is("HEALTHY")));
 
     }
 

@@ -25,5 +25,8 @@ class InventoryServiceTest {
         assertEquals(3, response.totalProducts());
         assertEquals(3, response.lowStockProductCount());
         assertEquals(0, response.outOfStockProductCount());
+        assertEquals(3, response.products().size());
+
+        assertEquals("LOW_STOCK", response.products().get(0).inventoryStatus());
     }
 }

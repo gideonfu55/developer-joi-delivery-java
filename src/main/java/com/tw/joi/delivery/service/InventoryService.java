@@ -3,6 +3,7 @@ package com.tw.joi.delivery.service;
 import com.tw.joi.delivery.domain.GroceryProduct;
 import com.tw.joi.delivery.domain.GroceryStore;
 import com.tw.joi.delivery.dto.response.InventoryHealthResponse;
+import com.tw.joi.delivery.dto.response.InventoryProductHealth;
 import com.tw.joi.delivery.exception.ResourceNotFoundException;
 import com.tw.joi.delivery.seedData.SeedData;
 import org.springframework.stereotype.Service;
@@ -20,32 +21,36 @@ public class InventoryService {
     private static final String EMPTY = "EMPTY";
 
     /**
-     * Fetches the inventory health for a specific grocery store by its store ID.
+     * Fetches the inventory health status for a specific grocery store.
+     * The method calculates the overall inventory status of a store, the number of
+     * products in various inventory states (low stock, out of stock), and compiles
+     * a detailed inventory health report for all products in the store.
      *
-     * This method determines the inventory health based on the total number of products,
-     * the count of products with low stock, and the count of products that are out of stock.
-     * It calculates and returns an inventory status such as "HEALTHY", "LOW_STOCK", "OUT_OF_STOCK", or "EMPTY".
-     *
-     * @param storeId the unique identifier of the grocery store for which the inventory health is to be fetched
-     * @return an {@code InventoryHealthResponse} object containing the store details, inventory status,
-     *         total number of products, count of low-stock products, and count of out-of-stock products
+     * @param storeId The unique identifier of the grocery store whose inventory health needs to be fetched.
+     * @return An {@link InventoryHealthResponse} object containing the store details, overall inventory status,
+     *         total number of products, count of low-stock products, count of out-of-stock products,
+     *         and a detailed product-wise inventory health report.
      */
     public InventoryHealthResponse fetchStoreInventoryHealth(String storeId) {
         GroceryStore store = findStoreByStoreId(storeId);
         List<GroceryProduct> productsForStore = findProductsByStoreId(storeId);
+        List<InventoryProductHealth> inventoryProductHealthList = productsForStore.stream()
+            .map(this::toProductInventoryHealth)
+            .toList();
 
         int totalProducts = productsForStore.size();
         int lowStockProductCount = countLowStockProducts(productsForStore);
         int outOfStockProductCount = countOutOfStockProducts(productsForStore);
 
-        String inventoryStatus = calculateInventoryStatus(totalProducts, lowStockProductCount, outOfStockProductCount);
+        String inventoryStatus = calculateStoreInventoryStatus(totalProducts, lowStockProductCount, outOfStockProductCount);
 
         return new InventoryHealthResponse(
             store,
             inventoryStatus,
             totalProducts,
             lowStockProductCount,
-            outOfStockProductCount
+            outOfStockProductCount,
+            inventoryProductHealthList
         );
     }
 
@@ -66,6 +71,16 @@ public class InventoryService {
             .toList();
     }
 
+    private InventoryProductHealth toProductInventoryHealth(GroceryProduct product) {
+        return new InventoryProductHealth(
+            product.getProductId(),
+            product.getProductName(),
+            product.getAvailableStock(),
+            product.getThreshold(),
+            calculateProductInventoryStatus(product)
+        );
+    }
+
     private int countLowStockProducts(List<GroceryProduct> products) {
         return (int) products.stream()
             .filter(product -> product.getAvailableStock() > 0)
@@ -79,7 +94,19 @@ public class InventoryService {
             .count();
     }
 
-    private String calculateInventoryStatus(
+    private String calculateProductInventoryStatus(GroceryProduct product) {
+        if (product.getAvailableStock() == 0) {
+            return OUT_OF_STOCK;
+        }
+
+        if (product.getAvailableStock() <= product.getThreshold()) {
+            return LOW_STOCK;
+        }
+
+        return HEALTHY;
+    }
+
+    private String calculateStoreInventoryStatus(
         int totalProducts,
         int lowStockProductCount,
         int outOfStockProductCount) {
