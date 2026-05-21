@@ -1,11 +1,13 @@
 package com.tw.joi.delivery.controller;
 
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.tw.joi.delivery.domain.GroceryStore;
 import com.tw.joi.delivery.dto.response.InventoryHealthResponse;
+import com.tw.joi.delivery.exception.ResourceNotFoundException;
 import com.tw.joi.delivery.service.InventoryService;
 import org.hamcrest.core.Is;
 import org.junit.jupiter.api.Test;
@@ -59,5 +61,37 @@ class InventoryControllerTest {
             .andExpect(MockMvcResultMatchers.jsonPath("$.lowStockProductCount", Is.is(0)))
             .andExpect(MockMvcResultMatchers.jsonPath("$.outOfStockProductCount", Is.is(0)));
 
+    }
+
+    @Test
+    void shouldReturnNotFoundWhenStoreDoesNotExist() throws Exception {
+        String storeId = "invalidStore";
+
+        when(inventoryService.fetchStoreInventoryHealth(storeId))
+            .thenThrow(new ResourceNotFoundException(
+                "Store not found for storeId: " + storeId
+            ));
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/inventory/health")
+                .param("storeId", storeId)
+                .contentType(MediaType.APPLICATION_JSON))
+            .andDo(print())
+            .andExpect(status().isNotFound())
+            .andExpect(MockMvcResultMatchers.jsonPath("$.status", Is.is(404)))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.error", Is.is("Not Found")))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.message",
+                Is.is("Store not found for storeId: invalidStore")));
+    }
+
+    @Test
+    void shouldReturnBadRequestWhenStoreIdIsMissing() throws Exception {
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/inventory/health")
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest())
+            .andExpect(MockMvcResultMatchers.jsonPath("$.status", Is.is(400)))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.error", Is.is("Bad Request")))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.message",
+                Is.is("Missing required request parameter: storeId")));
     }
 }

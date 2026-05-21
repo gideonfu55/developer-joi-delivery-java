@@ -3,6 +3,7 @@ package com.tw.joi.delivery.service;
 import com.tw.joi.delivery.domain.GroceryProduct;
 import com.tw.joi.delivery.domain.GroceryStore;
 import com.tw.joi.delivery.dto.response.InventoryHealthResponse;
+import com.tw.joi.delivery.exception.ResourceNotFoundException;
 import com.tw.joi.delivery.seedData.SeedData;
 import org.springframework.stereotype.Service;
 
@@ -52,7 +53,9 @@ public class InventoryService {
         return Stream.of(SeedData.store101, SeedData.store102)
             .filter(store -> store.getOutletId().equals(storeId))
             .findFirst()
-            .orElse(null);
+            .orElseThrow(() -> new ResourceNotFoundException(
+                "Store not found for storeId: " + storeId
+            ));
     }
 
     private List<GroceryProduct> findProductsByStoreId(String storeId) {
