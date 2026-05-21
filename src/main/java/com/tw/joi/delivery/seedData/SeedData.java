@@ -1,9 +1,7 @@
 package com.tw.joi.delivery.seedData;
 
-import com.tw.joi.delivery.domain.Cart;
-import com.tw.joi.delivery.domain.GroceryProduct;
-import com.tw.joi.delivery.domain.GroceryStore;
-import com.tw.joi.delivery.domain.User;
+import com.tw.joi.delivery.domain.*;
+
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
@@ -24,7 +22,7 @@ public class SeedData {
     public static List<GroceryProduct> groceryProducts =
         Arrays.asList(createGroceryProduct("Wheat Bread", "product101", store101),
                       createGroceryProduct("Spinach", "product102", store101),
-                      createGroceryProduct("Crackers", "product103", store101));
+                      createGroceryProductWithDiscount("Crackers", "product103", store101));
 
     public static List<User> users = Arrays.asList(user101);
 
@@ -69,8 +67,16 @@ public class SeedData {
             .store(store)
             .threshold(10)
             .availableStock(30)
-//            .availableStock(0) // to test out of stock scenario
+//            .availableStock(0) // to test out-of-stock scenario
             .build();
+    }
+
+    private static GroceryProduct createGroceryProductWithDiscount(String productName,
+                                                       String productId, GroceryStore store) {
+
+        GroceryProduct product = createGroceryProduct(productName, productId, store);
+        product.setDiscount(BigDecimal.valueOf(2.00));
+        return product;
     }
 
 }

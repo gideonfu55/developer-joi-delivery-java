@@ -6,7 +6,7 @@ import java.util.List;
 
 public record InventoryHealthResponse(
     GroceryStore store,
-    String inventoryStatus,
+    String overallStoreInventoryStatus,
     int totalProducts,
     int lowStockProductCount,
     int outOfStockProductCount,

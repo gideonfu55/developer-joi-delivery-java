@@ -21,7 +21,7 @@ class InventoryServiceTest {
             inventoryService.fetchStoreInventoryHealth("store101");
 
         assertEquals("store101", response.store().getOutletId());
-        assertEquals("LOW_STOCK", response.inventoryStatus());
+        assertEquals("LOW_STOCK", response.overallStoreInventoryStatus());
         assertEquals(3, response.totalProducts());
         assertEquals(3, response.lowStockProductCount());
         assertEquals(0, response.outOfStockProductCount());
