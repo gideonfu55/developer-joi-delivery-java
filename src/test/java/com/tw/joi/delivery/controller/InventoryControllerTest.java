@@ -66,10 +66,9 @@ class InventoryControllerTest {
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             //put meaningful assertions
-            .andExpect(status().isOk())
             .andExpect(MockMvcResultMatchers.jsonPath("$.store.outletId", Is.is("store101")))
             .andExpect(MockMvcResultMatchers.jsonPath("$.store.name", Is.is("Fresh Picks")))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.inventoryStatus", Is.is("HEALTHY")))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.overallStoreInventoryStatus", Is.is("HEALTHY")))
             .andExpect(MockMvcResultMatchers.jsonPath("$.totalProducts", Is.is(3)))
             .andExpect(MockMvcResultMatchers.jsonPath("$.lowStockProductCount", Is.is(0)))
             .andExpect(MockMvcResultMatchers.jsonPath("$.outOfStockProductCount", Is.is(0)))
@@ -78,7 +77,6 @@ class InventoryControllerTest {
             .andExpect(MockMvcResultMatchers.jsonPath("$.products[0].availableStock", Is.is(30)))
             .andExpect(MockMvcResultMatchers.jsonPath("$.products[0].threshold", Is.is(10)))
             .andExpect(MockMvcResultMatchers.jsonPath("$.products[0].inventoryStatus", Is.is("HEALTHY")));
-
     }
 
     @Test
