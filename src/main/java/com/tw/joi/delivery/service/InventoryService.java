@@ -2,8 +2,8 @@ package com.tw.joi.delivery.service;
 
 import com.tw.joi.delivery.domain.GroceryProduct;
 import com.tw.joi.delivery.domain.GroceryStore;
-import com.tw.joi.delivery.dto.response.InventoryHealthResponse;
-import com.tw.joi.delivery.dto.response.InventoryProductHealth;
+import com.tw.joi.delivery.dto.response.StoreInventoryHealth;
+import com.tw.joi.delivery.dto.response.ProductInventoryHealth;
 import com.tw.joi.delivery.exception.ResourceNotFoundException;
 import com.tw.joi.delivery.seedData.SeedData;
 import org.springframework.stereotype.Service;
@@ -27,14 +27,14 @@ public class InventoryService {
      * a detailed inventory health report for all products in the store.
      *
      * @param storeId The unique identifier of the grocery store whose inventory health needs to be fetched.
-     * @return An {@link InventoryHealthResponse} object containing the store details, overall inventory status,
+     * @return An {@link StoreInventoryHealth} object containing the store details, overall inventory status,
      *         total number of products, count of low-stock products, count of out-of-stock products,
      *         and a detailed product-wise inventory health report.
      */
-    public InventoryHealthResponse fetchStoreInventoryHealth(String storeId) {
+    public StoreInventoryHealth fetchStoreInventoryHealth(String storeId) {
         GroceryStore store = findStoreByStoreId(storeId);
         List<GroceryProduct> productsForStore = findProductsByStoreId(storeId);
-        List<InventoryProductHealth> inventoryProductHealthList = productsForStore.stream()
+        List<ProductInventoryHealth> productInventoryHealthList = productsForStore.stream()
             .map(this::toProductInventoryHealth)
             .toList();
 
@@ -42,15 +42,15 @@ public class InventoryService {
         int lowStockProductCount = countLowStockProducts(productsForStore);
         int outOfStockProductCount = countOutOfStockProducts(productsForStore);
 
-        String inventoryStatus = calculateStoreInventoryStatus(totalProducts, lowStockProductCount, outOfStockProductCount);
+        String storeInventoryStatus = calculateStoreInventoryStatus(totalProducts, lowStockProductCount, outOfStockProductCount);
 
-        return new InventoryHealthResponse(
+        return new StoreInventoryHealth(
             store,
-            inventoryStatus,
+            storeInventoryStatus,
             totalProducts,
             lowStockProductCount,
             outOfStockProductCount,
-            inventoryProductHealthList
+            productInventoryHealthList
         );
     }
 
@@ -71,8 +71,8 @@ public class InventoryService {
             .toList();
     }
 
-    private InventoryProductHealth toProductInventoryHealth(GroceryProduct product) {
-        return new InventoryProductHealth(
+    private ProductInventoryHealth toProductInventoryHealth(GroceryProduct product) {
+        return new ProductInventoryHealth(
             product.getProductId(),
             product.getProductName(),
             product.getAvailableStock(),

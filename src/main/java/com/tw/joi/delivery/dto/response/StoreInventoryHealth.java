@@ -4,12 +4,12 @@ import com.tw.joi.delivery.domain.GroceryStore;
 
 import java.util.List;
 
-public record InventoryHealthResponse(
+public record StoreInventoryHealth(
     GroceryStore store,
     String overallStoreInventoryStatus,
     int totalProducts,
     int lowStockProductCount,
     int outOfStockProductCount,
-    List<InventoryProductHealth> products
+    List<ProductInventoryHealth> products
 ) {
 }

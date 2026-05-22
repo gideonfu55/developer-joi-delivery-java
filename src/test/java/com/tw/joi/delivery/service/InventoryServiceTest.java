@@ -1,6 +1,6 @@
 package com.tw.joi.delivery.service;
 
-import com.tw.joi.delivery.dto.response.InventoryHealthResponse;
+import com.tw.joi.delivery.dto.response.StoreInventoryHealth;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -17,7 +17,7 @@ class InventoryServiceTest {
 
     @Test
     void shouldReturnHealthyInventoryForStore101() {
-        InventoryHealthResponse response =
+        StoreInventoryHealth response =
             inventoryService.fetchStoreInventoryHealth("store101");
 
         assertEquals("store101", response.store().getOutletId());

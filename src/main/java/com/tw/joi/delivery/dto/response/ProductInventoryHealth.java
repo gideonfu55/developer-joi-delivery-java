@@ -1,6 +1,6 @@
 package com.tw.joi.delivery.dto.response;
 
-public record InventoryProductHealth(
+public record ProductInventoryHealth(
     String productId,
     String productName,
     int availableStock,

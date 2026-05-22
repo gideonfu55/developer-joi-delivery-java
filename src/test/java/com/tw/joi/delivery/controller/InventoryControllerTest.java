@@ -6,8 +6,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.tw.joi.delivery.domain.GroceryStore;
-import com.tw.joi.delivery.dto.response.InventoryHealthResponse;
-import com.tw.joi.delivery.dto.response.InventoryProductHealth;
+import com.tw.joi.delivery.dto.response.StoreInventoryHealth;
+import com.tw.joi.delivery.dto.response.ProductInventoryHealth;
 import com.tw.joi.delivery.exception.ResourceNotFoundException;
 import com.tw.joi.delivery.service.InventoryService;
 import org.hamcrest.core.Is;
@@ -42,7 +42,7 @@ class InventoryControllerTest {
             .outletId("store101")
             .build();
 
-        InventoryProductHealth inventoryProductHealthList = new InventoryProductHealth(
+        ProductInventoryHealth productInventoryHealthList = new ProductInventoryHealth(
             "product101",
             "Wheat Bread",
             30,
@@ -50,13 +50,13 @@ class InventoryControllerTest {
             "HEALTHY"
         );
 
-        InventoryHealthResponse response = new InventoryHealthResponse(
+        StoreInventoryHealth response = new StoreInventoryHealth(
             store,
             "HEALTHY",
             3,
             0,
             0,
-            List.of(inventoryProductHealthList)
+            List.of(productInventoryHealthList)
         );
 
         when(inventoryService.fetchStoreInventoryHealth("store101"))
