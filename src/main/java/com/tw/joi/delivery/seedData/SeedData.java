@@ -3,10 +3,7 @@ package com.tw.joi.delivery.seedData;
 import com.tw.joi.delivery.domain.*;
 
 import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 public class SeedData {
 
@@ -15,23 +12,31 @@ public class SeedData {
 
     public static User user101= SeedData.createUser("user101", "John", "Doe");
 
+    public static List<GroceryProduct> groceryProducts =
+        Arrays.asList(createGroceryProduct("Wheat Bread", "product101", store101),
+            createGroceryProduct("Spinach", "product102", store101),
+            createGroceryProductWithDiscount("Crackers", "product103", store101));
+
     public static Map<String, Cart> cartForUsers = Map.of(
         "user101", createCartForUser("user101", "John", "Doe", "cart101"),
         "user102", createCartForUser("user102", "Rachel", "Zane", "cart102"));
-
-    public static List<GroceryProduct> groceryProducts =
-        Arrays.asList(createGroceryProduct("Wheat Bread", "product101", store101),
-                      createGroceryProduct("Spinach", "product102", store101),
-                      createGroceryProductWithDiscount("Crackers", "product103", store101));
 
     public static List<User> users = Arrays.asList(user101);
 
     public static Cart createCartForUser(String userId, String firstName, String lastName,
                                          String cartId) {
+
+        List<Product> groceryProductsUser101 = Collections.singletonList(groceryProducts.stream()
+            .map(Product.class::cast)
+            .toList()
+            .getFirst()
+        );
+
         return Cart.builder()
             .cartId(cartId)
             .outlet(store101)
             .user(user101)
+            .products(groceryProductsUser101)
             .build();
     }
 
